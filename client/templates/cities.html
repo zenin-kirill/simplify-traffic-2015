@@ -1,0 +1,62 @@
+---
+name: cities
+url: /cities
+---
+
+<div class="grid-container">
+	<li align="center">
+		<div class="grid-block">
+			<div class="align-center medium-1 grid-block">
+				<b>Name:</b>   
+			</div>
+		
+			<div class="align-center medium-2 grid-block">
+				<b>Type:</b> 
+			</div>
+
+			<div class="align-center medium-2 grid-block">
+				<b>Country:</b>   
+			</div>
+		
+			<div class="align-center medium-2 grid-block">
+				<b>Population:</b> 
+			</div>
+
+			<div class="align-center medium-4 grid-block">
+				<b>Added_at:</b> 
+			</div>
+		</div>
+	</li>
+
+	<div ng-controller="citiesList">
+		<section class="block-list">
+			<ul>
+				<li align="center" ng-repeat="object in cities" class="with-chevron">
+					<a href="#">
+						<div class="grid-block">
+							<div class="align-center medium-1 grid-block">
+								{{object.name}}
+							</div>
+		
+							<div class="align-center medium-2 grid-block">
+								{{object.type}}
+							</div>
+		
+							<div class="align-center medium-2 grid-block">
+								{{object.counrty}}
+							</div>
+
+							<div class="align-center medium-2 grid-block">
+								{{object.population}}
+							</div>
+
+							<div class="align-center medium-4 grid-block">
+								{{object.created_at}}
+							</div>
+						</div>
+					</a>
+				</li>
+			</ul>
+		</section>
+	</div>
+</div>

@@ -1,0 +1,79 @@
+---
+name: carriers
+url: /carriers
+---
+
+<div class="grid-container">
+	<li align="center">
+		<div class="grid-block">
+			<div class="align-center medium-1 grid-block">
+				<b>Id:</b>   
+			</div>
+		
+			<div class="align-center medium-2 grid-block">
+				<b>Number:</b> 
+			</div>
+		
+			<div class="align-center medium-1 grid-block">
+				<b>Name:</b> 
+			</div>
+
+			<div class="align-center medium-3 grid-block">
+				<b>Addres:</b> 
+			</div>
+
+			<div class="align-center medium-2 grid-block">
+				<b>E-mail:</b> 
+			</div>
+
+			<div class="align-center medium-2 grid-block">
+				<b>Telefone:</b> 
+			</div>
+
+			<div class="align-center medium-3 grid-block">
+				<b>Added at:</b> 
+			</div>
+		</div>
+	</li>
+
+	<div ng-controller="carriersList">
+		<section class="block-list">
+			<ul>
+				<li align="center" ng-repeat="object in carriers" class="with-chevron">
+					<a href="http://api.simplify-traffic.com/v1/carriers/{{object.id}}">
+						<div class="grid-block">
+				
+							<div class="align-center medium-1 grid-block">
+								{{object.id}}
+							</div>
+		
+							<div class="align-center medium-2 grid-block">
+								{{object.legal_name}}
+							</div>
+		
+							<div class="align-center medium-1 grid-block">
+								{{object.display_name}}
+							</div>
+
+							<div class="align-center medium-3 grid-block">
+								{{object.addres}}
+							</div>
+
+							<div class="align-center medium-2 grid-block">
+								{{object.email}}
+							</div>
+
+							<div class="align-center medium-2 grid-block">
+								{{object.telefone}}
+							</div>
+
+							<div class="align-center medium-3 grid-block">
+								{{object.created_at}}
+							</div>
+						</div>
+					</a>
+				</li>
+			</ul>
+		</section>
+	</div>
+</div>
