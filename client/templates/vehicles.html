@@ -1,0 +1,84 @@
+---
+name: vehicles
+url: /vehicles
+---
+
+<div class="grid-container" "align-center">
+		<div class="grid-block">
+			<div class="align-center medium-1 grid-block">
+				<b>Id:</b>   
+			</div>
+		
+			<div class="align-center medium-1 grid-block">
+				<b>Type:</b> 
+			</div>
+		
+			<div class="align-center medium-2 grid-block">
+				<b>Number:</b> 
+			</div>
+
+			<div class="align-center medium-2 grid-block">
+				<b>Model:</b> 
+			</div>
+
+			<div class="align-center medium-2 grid-block">
+				<b>Manufactured:</b> 
+			</div>
+
+			<div class="align-center medium-3 grid-block">
+				<b>Payed until:</b> 
+			</div>
+
+			<div class="align-center medium-3 grid-block">
+				<b>Added at:</b> 
+			</div>
+
+			<div class="align-center medium-1 grid-block">
+				<a ui-sref="new-vehicle">Добавить</a>
+			</div>
+			
+		</div>
+
+	<div ng-controller="vehiclesController">
+		<section class="block-list">
+
+			 <ul>
+				<li align="center" ng-repeat="object in vehicles">
+						<div class="grid-block">
+				
+							<div class="align-center medium-1 grid-block">
+								{{object.id}}
+							</div>
+		
+							<div class="align-center medium-1 grid-block">
+								{{object.type}}
+							</div>
+		
+							<div class="align-center medium-2 grid-block">
+								{{object.number}}
+							</div>
+
+							<div class="align-center medium-2 grid-block">
+								{{object.manufacturer}} {{object.car_model}}
+							</div>
+
+							<div class="align-center medium-1 grid-block">
+								{{object.date_manufactured}}
+							</div>
+
+							<div class="align-center medium-3 grid-block">
+								{{object.payed_until}}
+							</div>
+
+							<div class="align-center medium-4 grid-block">
+								{{object.created_at}}
+							</div>
+							<div class="align-center medium-1 grid-block">
+								<a href="">Изменить</a>
+							</div>	
+						</div>
+				</li>
+			</ul>
+		</section>
+	</div>
+</div>

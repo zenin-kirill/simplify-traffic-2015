@@ -1,155 +1,178 @@
 (function() {
-  'use strict';
+    'use strict';
 
-  angular.module('application', [
-    'ngResource',
-    'ui.router',
-    'ngAnimate',
+    angular.module('application', [
+        'ngResource',
+        'ngRoute',
+        'ui.router',
+        'ngAnimate',
 
-    //foundation
-    'foundation',
-    'foundation.dynamicRouting',
-    'foundation.dynamicRouting.animations'
-  ])
-    .config(config)
+        'foundation',
+        'foundation.dynamicRouting',
+        'foundation.dynamicRouting.animations'
+    ])
+        .config(config)
+        .controller('citiesList', citiesList)
+        .controller('carriersList', carriersList)
+        .controller('vehiclesController', vehiclesController)
+        .controller('newVehicleController', newVehicleController)
+        .controller('editVehicleController', editVehicleController)
+        .run(run)
 
-    .factory('Vehicle', function($resource) {
-      var Vehicle = $resource('http://api.simplify-traffic.com/v1/vehicles/:id',
-              {query: 
-                {
-                  method: 'GET',
-                  isArray: true,
-                  headers: { 'Token': '12345' }
-                } 
-              },
+        .factory('VehiclesFactory', ['$resource', function($resource)  
+        {
+            return $resource('http://api.simplify-traffic.com/v1/vehicles/:vehicleId', 
+            {
+                vehicleId: "@vehicleId"
+            },
 
-              {get: 
-                {
-                  method: 'GET',
-                  isArray: false,
-                  headers: { 'Token': '12345' }
-                } 
-              },
-
-              {update: 
+            {
+                'get': 
                 { 
-                  method: 'PUT',
-                  headers: { 'Token': '12345' }
+                    method:'GET',
+                     isArray: true,
+                    headers: { 'Token': '12345' }
+                },
+        
+                'query': 
+                {
+                    method: 'GET',
+                    isArray: true,
+                    headers: { 'Token': '12345' }
+                },
+                'save':
+                { 
+                    method:'POST',
+                    isArray: true,
+                    headers: { 'Token': '12345' }
+                },
+                'update':
+                {
+                    method:'PUT',
+                    isArray: true,
+                    headers: { 'Token': '12345' }
                 }
-              }
-      );
- 
-  Vehicle.update = function(cb) {
-        return Vehicle.update({id: this._id.$oid},
-            angular.extend({}, this, {_id:undefined}), cb);
-      };
- 
-  Vehicle.destroy = function(cb) {
-        return Vehicle.remove({id: this._id.$oid}, cb);
-      };
- 
-      return Vehicle;
-    })
+            });
+        }])
 
-    .controller('vehiclesList', vehiclesList)
-    .controller('citiesList', citiesList)
-    .controller('carriersList', carriersList)
-    .run(run);
+   
 
-  config.$inject = ['$urlRouterProvider', '$locationProvider', '$httpProvider'];
-  vehiclesList.$inject = ['$scope', '$stateParams', '$state', '$controller', 'Vehicle', '$http'];
-  citiesList.$inject = ['$scope', '$stateParams', '$state', '$controller', '$http'];
-  carriersList.$inject = ['$scope', '$stateParams', '$state', '$controller', '$http'];
-  vehiclesCreate.$inject = ['$scope', '$location', '$stateParams', '$state', '$controller', 'Vehicle']
-  vehiclesEdit.$inject = ['$scope', '$location', '$routeParams', '$stateParams', '$state', '$controller', 'Vehicle']
+    config.$inject = ['$urlRouterProvider', '$locationProvider', '$httpProvider'];
+  
+    vehiclesController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'VehiclesFactory'];
+    newVehicleController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'VehiclesFactory'];
+    editVehicleController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', '$routeParams', 'VehiclesFactory'];
 
+    citiesList.$inject = ['$scope', '$stateParams', '$state', '$controller', '$http'];
+    carriersList.$inject = ['$scope', '$stateParams', '$state', '$controller', '$http'];
+
+    function config($urlProvider, $locationProvider, $httpProvider) 
+    {
+        $httpProvider.defaults.headers.get = {};
+        $httpProvider.defaults.headers.put = {};
+        $httpProvider.defaults.headers.post = {};
+    // $httpProvider.defaults.headers.delete = {};
+
+        $httpProvider.defaults.headers.get['Token'] = '12345';
+        $httpProvider.defaults.headers.put['Token'] = '12345';
+        $httpProvider.defaults.headers.post['Token'] = '12345';
+    // $httpProvider.defaults.headers.delete['Token'] = '12345';
+
+        $httpProvider.defaults.headers.post['Content-Type'] = 'application/json';
+        $httpProvider.defaults.headers.put['Content-Type'] = 'application/json';
+
+        $urlProvider.otherwise('/');
+
+        $locationProvider.html5Mode(
+        {
+            enabled:false,
+            requireBase: false
+        });
+
+        $locationProvider.hashPrefix('!');
+    }
+
+
+
+    function vehiclesController($scope, $stateParams, $state, $controller, VehiclesFactory)
+    {
+        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+  
+        $scope.vehicles = VehiclesFactory.query();
+    }
+
+
+
+    function newVehicleController($scope, $stateParams, $state, $controller, $location, VehiclesFactory) 
+    {
+        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+        $scope.newVehicle = new VehiclesFactory();
+        $scope.newVehicle.type = 'bus';
+        $scope.newVehicle.carrier_id = '1';
+
+        $scope.save = function() 
+        {
+            VehiclesFactory.save($scope.newVehicle, function(vehicle) 
+            {
+                $location.path('!#/vehicles');
+            });
+        };
+    }
   
 
-  function config($urlProvider, $locationProvider, $httpProvider) {
-    $httpProvider.defaults.headers.get = {};
-    $httpProvider.defaults.headers.put = {};
-    $httpProvider.defaults.headers.post = {};
-    $httpProvider.defaults.headers.delete = {};
-    $httpProvider.defaults.headers.get['Token'] = '12345';
-    $httpProvider.defaults.headers.put['Token'] = '12345';
-    $httpProvider.defaults.headers.post['Token'] = '12345';
-    $httpProvider.defaults.headers.delete['Token'] = '12345';
-    $urlProvider.otherwise('/');
-
-    $locationProvider.html5Mode({
-      enabled:false,
-      requireBase: false
-    });
-
-    $locationProvider.hashPrefix('!');
-  }
-
-  function vehiclesList($scope, $stateParams, $state, $controller, Vehicle, $http) {
-    angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state, Vehicle}));
-    //$scope.vehicles = Vehicle.quere();
-    //$http.defaults.headers.get = {};
-    $http.defaults.headers.get['Token'] = '12345';
-    $http.get('http://api.simplify-traffic.com/v1/vehicles').
-        success(function(data) {
-           $scope.vehicless = data.vehicles;
+    
+    function editVehicleController($scope, $stateParams, $state, $controller, $location, $routeParams, VehiclesFactory) 
+    {
+        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+        
+        var self = this;
+ 
+        VehiclesFactory.get({vehicleId: $routeParams.vehicleId}, function(vehicle) 
+        {
+            self.originalVehicle = vehicle;
+            $scope.editVehicle = new VehiclesFactory(self.originalVehicle);
         });
-  }
 
-  function vehiclesCreate($scope, $location, $stateParams, $state, $controller, Vehicle) {
-    angular.extend(this, $controller('DefaultController', {$scope, $location, $stateParams, $state, $controller, Vehicle}));
-    $scope.save = function() {
-     Vehicle.save($scope.vehicle, function(vehicle) {
-       $location.path('/vehicles/edit/' + vehicle._id.$oid);
-     });
+        $scope.isClean = function() 
+        { 
+          return angular.equals(self.originalVehicle, $scope.editVehicle); 
+        }
+ 
+        $scope.update = function() 
+        {
+            VehiclesFactory.update({vehicleId:$routeParams.vehicleId}, $scope.editVehicle, function() 
+            {
+                $location.path('/vehicles');
+            });
+        };
     }
-  }
-
-  function vehiclesEdit($scope, $location, $routeParams, $stateParams, $state, $controller, Vehicle) {
-  angular.extend(this, $controller('DefaultController', {$scope, $location, $routeParams, $stateParams, $state, $controller, Vehicle}));
-  var self = this;
- 
-  Vehicle.get({id: $routeParams.vehicleId}, function(vehicle) {
-    self.original = vehicle;
-    $scope.vehicle = new Vehicle(self.original);
-  });
-
-  $scope.isClean = function() {
-    return angular.equals(self.original, $scope.vehicle);
-  }
-
-  $scope.destroy = function() {
-    self.original.destroy(function() {
-      $location.path('/vehicles/');
-    });
-  };
- 
-  $scope.save = function() {
-    $scope.vehicle.update(function() {
-      $location.path('/');
-    });
-  };
-  }
 
 
 
-  function citiesList($scope, $stateParams, $state, $controller, $http) {
-    angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state, $http: $http}));
-    $http.get('http://api.simplify-traffic.com/v1/cities').
-        success(function(data) {
-            $scope.cities = data.cities;
-        });
-  }
+    function citiesList($scope, $stateParams, $state, $controller, $http) 
+    {
+        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state, $http: $http}));
+    
+        $http.get('http://api.simplify-traffic.com/v1/cities')
+            .success(function(data) 
+            {
+                $scope.cities = data;
+            });
+    }
 
-  function carriersList($scope, $stateParams, $state, $controller, $http) {
-    angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state, $http: $http}));
-    $http.get('http://api.simplify-traffic.com/v1/carriers').
-        success(function(data) {
-            $scope.carriers = data.carriers;
-        });
-  }
+    function carriersList($scope, $stateParams, $state, $controller, $http) {
+        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state, $http: $http}));
+    
+        $http.get('http://api.simplify-traffic.com/v1/carriers')
+            .success(function(data) 
+            {
+                $scope.carriers = data;
+            });
+    }
 
-  function run() {
-    FastClick.attach(document.body);
-  }
+    function run() {
+        FastClick.attach(document.body);
+    }
 
 })();

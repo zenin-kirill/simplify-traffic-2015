@@ -1,0 +1,84 @@
+---
+name: edit-vehicle
+url: /vehicles/:vehicleId/edit
+---
+
+<div class="grid-container">
+	
+	<form name="vehicleCreateForm" align="center">
+		<div ng-controller="editVehicleController">
+		<div class="medium-6 grid-content">
+			<br/>
+			<span class="inline-label">
+				<span class="form-label">
+					Вид транспортного средства:
+				</span>
+				<select ng-model="newVehicle.type" name="vehicleDroupDown">
+					<option value="bus">Автобус</option>
+				</select>
+			</span>
+
+			<div ng-controller="carriersList">
+				<span class="inline-label">
+					<span class="form-label">
+						Транспортная компания:
+					</span>
+					<label></label>
+					<select ng-model="newVehicle.carrier_id"  name="carriersDroupDown">
+						<option ng-repeat="object in carriers" value="{{object.id}}">{{object.display_name}}</option>
+					</select>
+				</span>
+			</div>
+				
+			<div ng-class="{error: vehicleCreateForm.number.$invalid && !vehicleCreateForm.number.$pristine}">
+				<span class="inline-label">
+					<span class="form-label">
+						Регистрационный номер:
+					</span>
+					<input type="text" ng-model="newVehicle.number" name="number" placeholder="ср435д56" required>
+				</span>
+			</div>
+
+			
+			<div ng-class="{error: vehicleCreateForm.manufacturer.$invalid && !vehicleCreateForm.manufacturer.$pristine}">
+				<span class="inline-label">
+						<span class="form-label">
+							Производитель:
+						</span>
+					<input type="text" ng-model="newVehicle.manufacturer" name="manufacturer" placeholder="Mersedes" required>
+				</span>
+			</div>
+
+			
+			<div ng-class="{error: vehicleCreateForm.model.$invalid && !vehicleCreateForm.model.$pristine}">
+				<span class="inline-label">
+					<span class="form-label">
+						Модель:
+					</span>
+					<input type="text" ng-model="newVehicle.model" name="model" placeholder="S600" required>
+				</span>
+			</div>
+			
+			<div ng-class="{error: vehicleCreateForm.date_manufactured.$invalid && !vehicleCreateForm.date_manufactured.$pristine}">
+				<span class="inline-label">
+					<span class="form-label">
+							Дата производства:
+					</span>
+				
+					<input type="text" ng-model="newVehicle.date_manufactured" name="date_manufactured" placeholder="2015/05/16" required>
+				</span>
+			</div>
+
+			<div class="grid-block align-spaced">
+				<div class="grid-block medium-5 align-center">
+					<a class="secondary expand button" href="#" ui-sref="vehicles">Отмена</a>
+				</div>
+				<div class="grid-block medium-5 align-center">
+					<a class="success expand button" ng-click="update()" ng-disabled="vehicleCreateForm.$invalid || isClean()" href="#" >Добавить</a>
+				</div>
+				
+			</div>	
+		</div>
+		</div>
+	</form>
+</div>
