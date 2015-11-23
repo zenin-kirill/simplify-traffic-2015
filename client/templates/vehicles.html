@@ -4,8 +4,15 @@ url: /vehicles
 ---
 
 <div class="grid-container" "align-center">
-		<div class="grid-block">
-			<div class="align-center medium-1 grid-block">
+		
+<br/>
+	<div ng-controller="vehiclesController">
+		<section class="block-list">
+
+			 <ul>
+			 	<li align="center">
+			 	<div class="grid-block">
+			 	<div class="align-center medium-1 grid-block">
 				<b>Id:</b>   
 			</div>
 		
@@ -25,7 +32,7 @@ url: /vehicles
 				<b>Manufactured:</b> 
 			</div>
 
-			<div class="align-center medium-3 grid-block">
+			<div class="align-center medium-2 grid-block">
 				<b>Payed until:</b> 
 			</div>
 
@@ -36,13 +43,8 @@ url: /vehicles
 			<div class="align-center medium-1 grid-block">
 				<a ui-sref="new-vehicle">Добавить</a>
 			</div>
-			
-		</div>
-
-	<div ng-controller="vehiclesController">
-		<section class="block-list">
-
-			 <ul>
+			</div>
+			 	</li>
 				<li align="center" ng-repeat="object in vehicles">
 						<div class="grid-block">
 				
@@ -66,7 +68,7 @@ url: /vehicles
 								{{object.date_manufactured}}
 							</div>
 
-							<div class="align-center medium-3 grid-block">
+							<div class="align-center medium-2 grid-block">
 								{{object.payed_until}}
 							</div>
 
@@ -74,7 +76,10 @@ url: /vehicles
 								{{object.created_at}}
 							</div>
 							<div class="align-center medium-1 grid-block">
-								<a href="">Изменить</a>
+								<a href ui-sref="edit-vehicle({vehicleId: object.id})">Изменить</a>
+							</div>	
+							<div class="align-center medium-1 grid-block">
+								<a href ng-click="delete(object.id)">X</a>
 							</div>	
 						</div>
 				</li>
