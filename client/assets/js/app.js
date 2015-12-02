@@ -26,6 +26,14 @@
     .controller('newCityController', newCityController)
     .controller('editCityController', editCityController)
 
+    .controller('usersController', usersController)
+    .controller('newUserController', newUserController)
+    .controller('editUserController', editUserController)
+
+    .controller('stopsController', stopsController)
+    .controller('newStopController', newStopController)
+    .controller('editStopController', editStopController)
+
     .run(run)
 
     .factory('VehiclesFactory', ['$resource', function($resource)  
@@ -143,11 +151,88 @@
         });
     }])
 
+    .factory('UsersFactory', ['$resource', function($resource)  
+    {
+        return $resource('http://api.simplify-traffic.com/v1/users/:userId', 
+        {
+            userId: "@userId"
+        },
+
+        {
+            'get': 
+            { 
+                method:'GET',
+                headers: { 'Token': '12345' }
+            },
+
+            'query': 
+            {
+                method: 'GET',
+                isArray: true,
+                headers: { 'Token': '12345' }
+            },
+            'save':
+            { 
+                method:'POST',
+                headers: { 'Token': '12345' }
+            },
+            'update':
+            {
+                method:'PUT',
+                headers: { 'Token': '12345' }
+            },
+            'remove':
+            {
+                method:'DELETE',
+                headers: { 'Token': '12345' }
+            }
+        });
+    }])
+
+    .factory('StopsFactory', ['$resource', function($resource)  
+    {
+        return $resource('http://api.simplify-traffic.com/v1/stops/:stopId', 
+        {
+            stopId: "@stopId"
+        },
+
+        {
+            'get': 
+            { 
+                method:'GET',
+                headers: { 'Token': '12345' }
+            },
+
+            'query': 
+            {
+                method: 'GET',
+                isArray: true,
+                headers: { 'Token': '12345' }
+            },
+            'save':
+            { 
+                method:'POST',
+                headers: { 'Token': '12345' }
+            },
+            'update':
+            {
+                method:'PUT',
+                headers: { 'Token': '12345' }
+            },
+            'remove':
+            {
+                method:'DELETE',
+                headers: { 'Token': '12345' }
+            }
+        });
+    }])
+
+
 
 
     config.$inject = ['$urlRouterProvider', '$locationProvider', '$httpProvider'];
 
-    vehiclesController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'VehiclesFactory'];
+    vehiclesController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'VehiclesFactory', 'CarriersFactory'];
     newVehicleController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'VehiclesFactory', 'CarriersFactory'];
     editVehicleController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'VehiclesFactory', 'CarriersFactory'];
 
@@ -158,6 +243,14 @@
     citiesController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'CitiesFactory'];
     newCityController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CitiesFactory'];
     editCityController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CitiesFactory'];
+
+    usersController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'UsersFactory', 'CarriersFactory'];
+    newUserController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'UsersFactory', 'CarriersFactory'];
+    editUserController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'UsersFactory', 'CarriersFactory'];
+
+    stopsController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'StopsFactory', 'CitiesFactory'];
+    newStopController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'StopsFactory', 'CitiesFactory'];
+    editStopController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'StopsFactory', 'CitiesFactory'];
 
 
 
@@ -189,29 +282,47 @@
 
 
 
-    function vehiclesController($scope, $stateParams, $state, $controller, VehiclesFactory)
+    function vehiclesController($scope, $stateParams, $state, $controller, VehiclesFactory, CarriersFactory)
     {
         angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+        var i,j;
+        var carriersNames = [];
         
-        var vec = VehiclesFactory.query();
-        var i;
+        var vehicles = VehiclesFactory.query(function()
+        {
+            var carriers = CarriersFactory.query(function() 
+            {
+                for (i = 0; i < vehicles.length; i++)
+                {
+                    if (( j = getArrayProperties( carriers,'id', vehicles[i].carrier_id)) != undefined)
+                        carriersNames[i] = carriers[j].display_name;
+                    else
+                        carriersNames[i] = "не существует";
+                }
+
+                $scope.carriersNames =  carriersNames;
+                $scope.vehicles = vehicles;
+            });
+        });
+
+    
 
         $scope.delete = function(id)
         {
             VehiclesFactory.remove({vehicleId: id}, function()
             {
-                for (i = 0; i < vec.length; i++) 
+                for (i = 0; i < vehicles.length; i++) 
                 {
-                    if (vec[i].id == id) {vec.splice(i, 1)}
+                    if (vehicles[i].id == id) {vehicles.splice(i, 1)}
                 }
 
-                $scope.vehicles = vec;
+                $scope.vehicles = vehicles;
             });
         }
         
         //return new Date(entry.created_at.replace(/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+) +(\d+)/, '$2/$3/$1 $4:$5:$6 GMT+$7'));
         //var text = "2012-11-28 12:10:10 0000";
-        $scope.vehicles = vec;
     }
 
 
@@ -264,14 +375,97 @@
 
 
 
+    function usersController($scope, $stateParams, $state, $controller, UsersFactory, CarriersFactory)
+    {
+        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+        var i,j;
+        var carriersNames = [];
+        
+        var users = UsersFactory.query(function()
+        {
+            var carriers = CarriersFactory.query(function() 
+            {
+                for (i = 0; i < users.length; i++)
+                {
+                    if (( j = getArrayProperties( carriers,'id', users[i].carrier_id)) != undefined)
+                        carriersNames[i] = carriers[j].display_name;
+                    else
+                        carriersNames[i] = "не существует";
+                }
+
+                $scope.carriersNames =  carriersNames;
+                $scope.users = users;
+            });
+        });
+
+
+
+        $scope.delete = function(id)
+        {
+            UsersFactory.remove({userId: id}, function()
+            {
+                for (i = 0; i < users.length; i++) 
+                {
+                    if (users[i].id == id) {users.splice(i, 1)}
+                }
+
+                $scope.users = users;
+            });
+        }
+    }
+
+
+
+    function stopsController($scope, $stateParams, $state, $controller, StopsFactory, CitiesFactory)
+    {
+        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+        
+        var i, j;
+        var cityNames = [];
+        
+        var stops = StopsFactory.query(function()
+        {
+            var cities = CitiesFactory.query(function() 
+            {
+                for (i = 0; i < stops.length; i++)
+                {
+                    if (( j = getArrayProperties( cities,'id', stops[i].city_id)) != undefined)
+                        cityNames[i] = cities[j].name;
+                    else
+                        cityNames[i] = "не существует";
+                }
+
+                $scope.cityNames =  cityNames;
+                $scope.stops = stops;
+            });
+        });
+        
+        $scope.delete = function(id)
+        {
+            StopsFactory.remove({stopId: id}, function()
+            {
+                for (i = 0; i < stops.length; i++) 
+                {
+                    if (stops[i].id == id) {stops.splice(i, 1)}
+                }
+
+                $scope.stops = stops;
+            });
+        }
+    }
+
+
+
     function newVehicleController($scope, $stateParams, $state, $controller, $location, VehiclesFactory, CarriersFactory) 
     {
         angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
 
-        $scope.carriers = CarriersFactory.query();
         $scope.newVehicle = new VehiclesFactory();
         $scope.newVehicle.type = 'bus';
-        $scope.newVehicle.carrier_id = '1';
+        $scope.carriers = CarriersFactory.query(function(object){
+             $scope.newUser.carrier_id = object[0].id;
+        });
 
         $scope.save = function() 
         {
@@ -313,6 +507,59 @@
             CitiesFactory.save($scope.newCity, function() 
             {
                 $location.path('/cities');
+            });
+        };
+    }
+
+
+
+    function newUserController($scope, $stateParams, $state, $controller, $location, UsersFactory, CarriersFactory) 
+    {
+        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+        $scope.newUser = new UsersFactory();
+        $scope.newUser.role = 'carrier';
+        $scope.newUser.type = 'user';
+        $scope.carriers = CarriersFactory.query(function(object){
+             $scope.newUser.carrier_id = object[0].id;
+        });
+       
+
+        $scope.save = function() 
+        {
+            if ($scope.newUser.password == $scope.repassword)
+                UsersFactory.save($scope.newUser, function() 
+            {
+                $location.path('/users');
+            });
+            else
+            {
+                alert('Введенные пароли не совпадают');
+                $scope.newUser.password = "";
+                $scope.repassword = "";
+            }
+        };
+    }
+
+
+
+    function newStopController($scope, $stateParams, $state, $controller, $location, StopsFactory, CitiesFactory) 
+    {
+        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+        $scope.newStop = new StopsFactory();
+        $scope.newStop.type = 'bus';
+        $scope.cities = CitiesFactory.query(function(object){
+            $scope.newStop.city_id = object[0].id;
+        });
+
+        
+
+        $scope.save = function() 
+        {
+            StopsFactory.save($scope.newStop, function() 
+            {
+                $location.path('/stops');
             });
         };
     }
@@ -388,7 +635,77 @@
         };
     }
 
+    function editUserController($scope, $stateParams, $state, $controller, $location, UsersFactory, CarriersFactory) 
+    {
+        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
 
+        $scope.carriers = CarriersFactory.query();
+        var originalUser = UsersFactory.get({userId: $stateParams.userId}, function(){
+             originalUser.password = "";
+        })
+        $scope.editUser = originalUser;
+
+        $scope.isClean = function() 
+        { 
+          return angular.equals(originalUser, $scope.editUser); 
+        }
+        
+        $scope.update = function() 
+        {
+            if ($scope.editUser.password == $scope.repassword)
+            {
+                UsersFactory.update({userId:$stateParams.userId}, $scope.editUser, function() 
+                {
+                   $location.path('/users');
+                });
+            }
+            else
+            {
+                alert('Введенные пароли не совпадают');
+                $scope.editUser.password = "";
+                $scope.repassword = "";
+            }
+        };
+    }
+
+
+
+    function editStopController($scope, $stateParams, $state, $controller, $location, StopsFactory, CitiesFactory) 
+    {
+        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+        var originalStop = StopsFactory.get({stopId: $stateParams.stopId});
+        $scope.editStop = originalStop;
+        $scope.cities = CitiesFactory.query(function(object){
+            if (object[editStop.city_id] == undefined)
+                $scope.editStop.city_id = object[0].id;
+        });
+
+
+        $scope.isClean = function() 
+        { 
+          return angular.equals(originalStop, $scope.editStop); 
+        }
+
+        $scope.update = function() 
+        {
+            StopsFactory.update({stopId:$stateParams.stopId}, $scope.editStop, function() 
+            {
+                $location.path('/stops');
+            });
+        };
+    }
+
+    function getArrayProperties(array, property, value) {
+        if (array instanceof Array)
+        {
+            for (var i = 0; i < array.length; i++)
+                if (array[i][property] == value)
+                    return i;
+        }
+        else
+            return undefined;
+    }
 
     function run() {
         FastClick.attach(document.body);

@@ -1,0 +1,71 @@
+---
+name: edit-stop
+url: /stops/:stopId/edit
+---
+
+<div class="grid-container">
+	<div ng-controller='editStopController'>
+		<form name="stopForm" align="center">
+			<div class="medium-6 grid-content">
+				<br/>				
+				<div ng-class="{error: !stopForm.type.$pristine}">
+					<label class="form-label">
+						Тип остановки:
+					</label>
+					<select ng-model="editStop.type" name="stopDroupDown">
+						<option value="bus">Автобус</option>
+					</select>
+				</div>
+
+				<div ng-class="{error: !stopForm.city_id.$pristine}">
+					<label class="form-label">
+						Населенный пункт:
+					</label>
+					<select ng-model="editStop.city_id"  name="citiesDroupDown">
+						<option ng-repeat="object in cities" value="{{object.id}}">{{object.name}}</option>
+					</select>
+				</div>
+				
+				<div ng-class="{error: stopForm.name.$invalid && !stopForm.name.$pristine}">
+					<label class="form-label">
+						Название:
+					</label>
+					<input type="text" ng-model="editStop.name" name="name" placeholder="Дом быта" required>
+				</div>
+
+				
+				<div ng-class="{error: stopForm.description.$invalid && !stopForm.description.$pristine}">
+					<label class="form-label">
+						Описание:
+					</label>
+					<textarea rows="1" ng-model="editStop.description" name="description" placeholder="Северная на ул.Кутузова" required></textarea>
+				</div>
+
+				
+				<div ng-class="{error: stopForm.latitude.$invalid && !stopForm.latitude.$pristine}">
+					<label class="form-label">
+						Широта:
+					</label>
+					<input type="text" ng-model="editStop.latitude" name="latitude" placeholder="55.998030" required>
+				</div>
+				
+				<div ng-class="{error: stopForm.longitude.$invalid && !stopForm.longitude.$pristine}">
+					<label class="form-label">
+						Долгота:
+					</label>
+					
+					<input type="text" ng-model="editStop.longitude" name="longitude" placeholder="37.222711" required>
+				</div>
+
+				<div class="grid-block align-spaced">
+					<div class="grid-block medium-5 align-center">
+						<a class="secondary expand button" href="#" ui-sref="stops">Отмена</a>
+					</div>
+					<div class="grid-block medium-5 align-center">
+						<a class="success expand button" ng-click="update()" ng-disabled="stopForm.$invalid || IsClear" href="#" >Сохранить</a>
+					</div>				
+				</div>	
+			</div>
+		</form>
+	</div>
+</div>
