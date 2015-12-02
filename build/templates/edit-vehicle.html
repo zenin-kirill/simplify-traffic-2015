@@ -1,0 +1,76 @@
+
+<div class="grid-container">
+	<div ng-controller="editVehicleController">
+		<form name="vehicleForm" align="center">		
+			<div class="medium-6 grid-content">
+				<br/>
+				<div ng-class="{error: !vehicleForm.type.$pristine}">
+					<label class="form-label">
+						Вид транспортного средства:
+					</label>
+					<select ng-model="editVehicle.type" name="vehicleDroupDown">
+						<option value="bus">Автобус</option>
+					</select>
+				</div>
+
+				<div ng-class="{error: !vehicleForm.carrier_id.$pristine}">
+						<label class="form-label">
+							Транспортная компания:
+						</label>
+						<select ng-model="editVehicle.carrier_id"  name="carriersDroupDown">
+							<option ng-repeat="object in carriers" value="{{object.id}}">{{object.display_name}}</option>
+						</select>
+				</div>
+				
+				<div ng-class="{error: vehicleForm.number.$invalid && !vehicleForm.number.$pristine}">
+					<label class="form-label">
+						Регистрационный номер:
+					</label>
+					<input type="text" ng-model="editVehicle.number" name="number" placeholder="ср435д56" required>
+				</div>
+
+				
+				<div ng-class="{error: vehicleForm.manufacturer.$invalid && !vehicleForm.manufacturer.$pristine}">
+					<label class="form-label">
+						Производитель:
+					</label>
+					<input type="text" ng-model="editVehicle.manufacturer" name="manufacturer" placeholder="Mersedes" required>
+				</div>
+
+				
+				<div ng-class="{error: vehicleForm.car_model.$invalid && !vehicleForm.car_model.$pristine}">
+					<label class="form-label">
+						Модель:
+					</label>
+					<input type="text" ng-model="editVehicle.car_model" name="car_model" placeholder="S600" required>
+				</div>
+				
+				<div ng-class="{error: vehicleForm.date_manufactured.$invalid && !vehicleForm.date_manufactured.$pristine}">
+					<label class="form-label">
+						Дата производства:
+					</label>
+					
+					<input type="text" ng-model="editVehicle.date_manufactured" name="date_manufactured" placeholder="2015/05/16" required>
+				</div>
+
+				<div ng-class="{error: vehicleForm.payed_until.$invalid && !vehicleForm.created_at.$pristine}">
+					<label class="form-label">
+						Оплачено до:
+					</label>
+					
+					<input type="text" ng-model="editVehicle.payed_until" name="payed_until" placeholder="2015-10-16 11:59:47 +0000" required>
+				</div>
+
+				<div class="grid-block align-spaced">
+					<div class="grid-block medium-5 align-center">
+						<a class="secondary expand button" href="#" ui-sref="vehicles">Отмена</a>
+					</div>
+					<div class="grid-block medium-5 align-center">
+						<a class="success expand button" ng-click="update()" ng-disabled="vehicleForm.$invalid || isClean()" href="#" >Сохранить</a>
+					</div>
+					
+				</div>	
+			</div>		
+		</form>
+	</div>
+</div>

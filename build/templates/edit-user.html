@@ -1,0 +1,76 @@
+
+<div class="grid-container">
+	<div ng-controller='editUserController'>
+		<form name="userForm" align="center">
+			<div class="medium-6 grid-content">
+				<br/>				
+
+				<div ng-class="{error: !userForm.role.$pristine}">
+					<label class="form-label">
+						Категория:
+					</label>
+					<select ng-model="editUser.role"  name="rolesDroupDown">
+						<option value="carrier">Компания</option>
+						<option value="editor">Модератор</option>
+						<option value="admin">Администратор</option>
+					</select>
+				</div>
+
+				<div ng-class="{error: !userForm.carrier_id.$pristine}">
+					<label class="form-label">
+						Транспортная компания:
+					</label>
+					<select ng-model="editUser.carrier_id"  name="carriersDroupDown">
+						<option ng-repeat="object in carriers" value="{{object.id}}">{{object.display_name}}</option>
+					</select>
+				</div>
+				
+				<div ng-class="{error: userForm.name.$invalid && !userForm.name.$pristine}">
+					<label class="form-label">
+						Имя:
+					</label>
+					<input type="text" ng-model="editUser.name" name="name" placeholder="Кирилл" required>
+				</div>
+
+				
+				<div ng-class="{error: userForm.surname.$invalid && !userForm.surname.$pristine}">
+					<label class="form-label">
+						Фамилия:
+					</label>
+					<input type="text" ng-model="editUser.surname" name="surname" placeholder="Андрианов" required>
+				</div>
+
+				
+				<div ng-class="{error: userForm.email.$invalid && !userForm.email.$pristine}">
+					<label class="form-label">
+						E-mail:
+					</label>
+					<input type="text" ng-model="editUser.email" name="email" placeholder="kerill.net@gmail.com" required>
+				</div>
+
+				<div ng-class="{error: userForm.password.$invalid && !userForm.password.$pristine}">
+					<label class="form-label">
+						Пароль:
+					</label>
+					<input type="password" ng-model="editUser.password" name="password" placeholder="" required>
+				</div>
+
+				<div ng-class="{error: userForm.repassword.$invalid && !userForm.repassword.$pristine}">
+					<label class="form-label">
+						Повторите пароль:
+					</label>
+					<input type="password" ng-model="repassword" name="repassword" placeholder="" required>
+				</div>
+
+				<div class="grid-block align-spaced">
+					<div class="grid-block medium-5 align-center">
+						<a class="secondary expand button" href="#" ui-sref="users">Отмена</a>
+					</div>
+					<div class="grid-block medium-5 align-center">
+						<a class="success expand button" ng-click="update()" ng-disabled="userForm.$invalid" href="#" >Сохранить</a>
+					</div>				
+				</div>	
+			</div>
+		</form>
+	</div>
+</div>

@@ -1,0 +1,67 @@
+
+<div class="grid-container">
+	<div ng-controller='newCarrierController'>
+		<form name="carrierForm" align="center">
+			<div class="medium-6 grid-content">
+				<br/>
+				<div ng-class="{error: carrierForm.legal_name.$invalid && !carrierForm.legal_name.$pristine}">
+					<label class="form-label">
+						Юридическое наименование компании:
+					</label>
+					<input type="text" ng-model="newCarrier.legal_name" name="legal_name" placeholder="ОАО Мосгортранс" required>
+				</div>
+
+				<div ng-class="{error: carrierForm.display_name.$invalid && !carrierForm.display_name.$pristine}">
+					<label class="form-label">
+						Отображаемое название:
+					</label>
+					<input type="text" ng-model="newCarrier.display_name" name="display_name" placeholder="Мосгортранс" required>
+				</div>
+
+				<div ng-class="{error: carrierForm.addres.$invalid && !carrierForm.addres.$pristine}">
+					<label class="form-label">
+						Адрес:
+					</label>
+					<input type="text" ng-model="newCarrier.addres" name="addres" placeholder="РФ , г. Москва ул. Автозаводская д. 3 оф. 234" required>
+				</div>
+
+				<div ng-class="{error: carrierForm.email.$invalid && !carrierForm.email.$pristine}">
+					<label class="form-label">
+						E-mail:
+					</label>
+					<input type="text" ng-model="newCarrier.email" name="email" placeholder="rules@mosgortrans.ru" required>
+				</div>
+
+				<div ng-class="{error: carrierForm.telefone.$invalid && !carrierForm.telefone.$pristine}">
+					<label class="form-label">
+						Телефон:
+					</label>
+					<input type="text" ng-model="newCarrier.telefone" name="telefone" placeholder="84995344556 " required>
+				</div>
+
+				<div ng-class="{error: carrierForm.contact_name.$invalid && !carrierForm.contact_name.$pristine}">
+					<label class="form-label">
+						Имя контактного лица:
+					</label>
+					<input type="text" ng-model="newCarrier.contact_name" name="contact_name" placeholder="Иван Мищурин" required>
+				</div>
+
+				<div ng-class="{error: carrierForm.comment.$invalid && !carrierForm.comment.$pristine}">
+					<label class="form-label">
+						Примечание:
+					</label>
+					<textarea rows="1" ng-model="newCarrier.comment" name="comment" placeholder="Крупнейшая московская компания организующая движение московского транспорта" required></textarea>
+
+					<div class="grid-block align-spaced">
+						<div class="grid-block medium-5 align-center">
+							<a class="secondary expand button" href="#" ui-sref="carriers">Отмена</a>
+						</div>
+						<div class="grid-block medium-5 align-center">
+							<a class="success expand button" ng-click="save()" ng-disabled="carrierForm.$invalid" href="#" >Добавить</a>
+						</div>
+
+					</div>	
+				</div>
+			</form>
+		</div>
+	</div>
