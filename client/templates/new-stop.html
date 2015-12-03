@@ -8,20 +8,12 @@ url: /stops/new
 		<form name="stopForm" align="center">
 			<div class="medium-6 grid-content">
 				<br/>				
-				<div ng-class="{error: !stopForm.type.$pristine}">
-					<label class="form-label">
-						Тип остановки:
-					</label>
-					<select ng-model="newStop.type" name="stopDroupDown">
-						<option value="bus">Автобус</option>
-					</select>
-				</div>
-
+				
 				<div ng-class="{error: !stopForm.city_id.$pristine}">
 					<label class="form-label">
 						Населенный пункт:
 					</label>
-					<select ng-model="newStop.city_id"  name="citiesDroupDown">
+					<select ng-model="newStop.city_id"  name="city_id">
 						<option ng-repeat="object in cities" value="{{object.id}}">{{object.name}}</option>
 					</select>
 				</div>

@@ -10,15 +10,6 @@
 					</label>
 					<input type="text" ng-model="editCity.name" name="name" placeholder="Москва" required>
 				</div>
-
-				<div ng-class="{error: !cityForm.type.$pristine}">
-					<label class="form-label">
-						Тип населенного пункта:
-					</label>
-					<select ng-model="editCity.type" name="cityDroupDown">
-						<option value="city">Город</option>
-					</select>
-				</div>
 				
 				<div ng-class="{error: cityForm.country.$invalid && !cityForm.country.$pristine}">
 					<label class="form-label">
