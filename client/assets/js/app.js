@@ -402,9 +402,9 @@
         {
             CitiesFactory.remove({cityId: id}, function()
             {
-                for (i = 0; i < $scope.city.length; i++) 
+                for (i = 0; i < $scope.cities.length; i++) 
                 {
-                    if ($scope.city[i].id == id) {$scope.city.splice(i, 1)}
+                    if ($scope.cities[i].id == id) {$scope.cities.splice(i, 1)}
                 }
             });
         }
@@ -605,6 +605,8 @@
 
         $scope.newUser = new UsersFactory();
         $scope.newUser.role = 'carrier';
+         $scope.newUser.token = '333';// ВРЕМЕННО
+
 
         $scope.carriers = CarriersFactory.query(function(carriers)
         {

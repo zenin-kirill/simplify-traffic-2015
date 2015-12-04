@@ -3,42 +3,48 @@ name: new-city
 url: /cities/new
 ---
 
-<div class="grid-container">
-	<div ng-controller='newCityController'>
-		<form name="cityForm" align="center">
-			<div class="medium-6 grid-content">
-				<br/>	
-				<div ng-class="{error: cityForm.name.$invalid && !cityForm.name.$pristine}">
-					<label class="form-label">
-						Название населенного пункта:
-					</label>
-					<input type="text" ng-model="newCity.name" name="name" placeholder="Москва" required>
-				</div>
-				
-				<div ng-class="{error: cityForm.country.$invalid && !cityForm.country.$pristine}">
-					<label class="form-label">
-						Страна:
-					</label>
-					<input type="text" ng-model="newCity.country" name="country" placeholder="Россия" required>
-				</div>
 
-				
-				<div ng-class="{error: cityForm.population.$invalid && !cityForm.population.$pristine}">
-					<label class="form-label">
-						Численность населения:
-					</label>
-					<input type="text" ng-model="newCity.population" name="population" placeholder="13 млн." required>
-				</div>
-
-				<div class="grid-block align-spaced">
-					<div class="grid-block medium-5 align-center">
-						<a class="secondary expand button" href="#" ui-sref="cities">Отмена</a>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+	</head>
+	<body>
+		<div class="grid-container align-center">
+			<div ng-controller='newCityController'>
+				<form name="cityForm" align="center">
+					<div class="medium-6 grid-content">
+						<br/>
+						<div ng-class="{error: cityForm.name.$invalid && !cityForm.name.$pristine}">
+							<label class="form-label">
+								Название населенного пункта:
+							</label>
+							<input type="text" ng-model="newCity.name" name="name" placeholder="Москва" required>
+						</div>
+						
+						<div ng-class="{error: cityForm.country.$invalid && !cityForm.country.$pristine}">
+							<label class="form-label">
+								Страна:
+							</label>
+							<input type="text" ng-model="newCity.country" name="country" placeholder="Россия" required>
+						</div>
+						
+						<div ng-class="{error: cityForm.population.$invalid && !cityForm.population.$pristine}">
+							<label class="form-label">
+								Численность населения:
+							</label>
+							<input type="text" ng-model="newCity.population" name="population" placeholder="13 млн." required>
+						</div>
+						<div class="grid-block align-spaced">
+							<div class="grid-block medium-5 align-center">
+								<a class="secondary expand button" href="#" ui-sref="cities">Отмена</a>
+							</div>
+							<div class="grid-block medium-5 align-center">
+								<a class="success expand button" ng-click="save()" ng-disabled="cityForm.$invalid" href="#" >Добавить</a>
+							</div>
+						</div>
 					</div>
-					<div class="grid-block medium-5 align-center">
-						<a class="success expand button" ng-click="save()" ng-disabled="cityForm.$invalid" href="#" >Добавить</a>
-					</div>				
-				</div>	
+				</form>
 			</div>
-		</form>
-	</div>
-</div>
+		</div>
+	</body>
+</html>
