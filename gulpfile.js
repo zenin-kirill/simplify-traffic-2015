@@ -42,10 +42,6 @@ var paths = {
     'bower_components/foundation-apps/js/angular/**/*.js',
     '!bower_components/foundation-apps/js/angular/app.js'
   ],
-  // These files are for your app's JavaScript
-  appJS: [
-    'client/assets/js/**/*.js'
-  ]
 }
 
 // 3. TASKS
@@ -134,7 +130,7 @@ gulp.task('uglify:app', function() {
       console.log(e);
     }));
 
-  return gulp.src(paths.appJS)
+  return gulp.src(['./client/assets/main_JS/app.js', './client/assets/other_JS/**/*.js' ,'./client/assets/main_JS/end.js'])
     .pipe(uglify)
     .pipe($.concat('app.js'))
     .pipe(gulp.dest('./build/assets/js/'))

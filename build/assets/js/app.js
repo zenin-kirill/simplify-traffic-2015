@@ -3,7 +3,7 @@
 
     //Indentation: Reindent lines 
 
-    angular.module('application', [
+    var appModule = angular.module('application', [
         'ngResource',
         'ui.router',
         'ngAnimate',
@@ -14,9 +14,8 @@
     ])
     .config(config)
 
-    .controller('vehiclesController', vehiclesController)
-    .controller('newVehicleController', newVehicleController)
-    .controller('editVehicleController', editVehicleController)
+    
+
 
     .controller('carriersController', carriersController)
     .controller('newCarrierController', newCarrierController)
@@ -40,43 +39,7 @@
 
     .run(run)
 
-    .factory('VehiclesFactory', ['$resource', function($resource)  
-    {
-        return $resource('http://api.simplify-traffic.com/v1/vehicles/:vehicleId', 
-        {
-            vehicleId: "@vehicleId"
-        },
-
-        {
-            'get': 
-            { 
-                method:'GET',
-                headers: { 'Token': '12345' }
-            },
-
-            'query': 
-            {
-                method: 'GET',
-                isArray: true,
-                headers: { 'Token': '12345' }
-            },
-            'save':
-            { 
-                method:'POST',
-                headers: { 'Token': '12345' }
-            },
-            'update':
-            {
-                method:'PUT',
-                headers: { 'Token': '12345' }
-            },
-            'remove':
-            {
-                method:'DELETE',
-                headers: { 'Token': '12345' }
-            }
-        });
-    }])
+    
 
 
     .factory('CarriersFactory', ['$resource', function($resource)  
@@ -274,9 +237,8 @@
 
     config.$inject = ['$urlRouterProvider', '$locationProvider', '$httpProvider'];
 
-    vehiclesController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'VehiclesFactory', 'CarriersFactory'];
-    newVehicleController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'VehiclesFactory', 'CarriersFactory'];
-    editVehicleController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'VehiclesFactory', 'CarriersFactory'];
+    
+    
 
     carriersController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'CarriersFactory'];
     newCarrierController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CarriersFactory'];
@@ -325,45 +287,6 @@
         $locationProvider.hashPrefix('!');
     }
 
-
-
-    function vehiclesController($scope, $stateParams, $state, $controller, VehiclesFactory, CarriersFactory)
-    {
-        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
-
-        var i,j;
-        $scope.carriersNames = [];
-
-        VehiclesFactory.query(function(vehicles)
-        {
-            CarriersFactory.query(function(carriers) 
-            {
-                for (i = 0; i < vehicles.length; i++)
-                {
-                    if (( j = indexOfObjByVal( carriers,'id', vehicles[i].carrier_id)) != undefined)
-                        $scope.carriersNames[i] = carriers[j].display_name;
-                    else
-                        $scope.carriersNames[i] = "не существует";
-                }
-
-                $scope.vehicles = vehicles;
-            });
-        });
-
-        $scope.delete = function(id)
-        {
-            VehiclesFactory.remove({vehicleId: id}, function()
-            {
-                for (i = 0; i < $scope.vehicles.length; i++) 
-                {
-                    if ($scope.vehicles[i].id == id) {$scope.vehicles.splice(i, 1)}
-                }
-            });
-        }
-        
-        //return new Date(entry.created_at.replace(/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+) +(\d+)/, '$2/$3/$1 $4:$5:$6 GMT+$7'));
-        //var text = "2012-11-28 12:10:10 0000";
-    }
 
 
     function carriersController($scope, $stateParams, $state, $controller, CarriersFactory)
@@ -542,26 +465,7 @@
 
 
 
-    function newVehicleController($scope, $stateParams, $state, $controller, $location, VehiclesFactory, CarriersFactory) 
-    {
-        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
-
-        $scope.newVehicle = new VehiclesFactory();
-        $scope.newVehicle.type = 'bus';
-
-        $scope.carriers = CarriersFactory.query(function(carriers)
-        {
-             $scope.newVehicle.carrier_id = carriers[0].id;
-        });
-
-        $scope.save = function() 
-        {
-            VehiclesFactory.save($scope.newVehicle, function() 
-            {
-                $location.path('/vehicles');
-            });
-        };
-    }
+    
 
 
 
@@ -681,34 +585,7 @@
 
 
     
-    function editVehicleController($scope, $stateParams, $state, $controller, $location, VehiclesFactory, CarriersFactory) 
-    {
-        angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
-
-        var originalVehicle = VehiclesFactory.get({vehicleId: $stateParams.vehicleId}, function(vehicle)
-        {
-            $scope.carriers = CarriersFactory.query(function(carriers)
-            {
-                if (carriers[vehicle.carrier_id] == undefined)
-                    vehicle.carrier_id = carriers[0].id;
-            });
-        });
-
-        $scope.editVehicle = originalVehicle;
-
-        $scope.isClean = function() 
-        { 
-          return angular.equals(originalVehicle, $scope.editVehicle); 
-        }
-
-        $scope.update = function() 
-        {
-            VehiclesFactory.update({vehicleId:$stateParams.vehicleId}, $scope.editVehicle, function() 
-            {
-                $location.path('/vehicles');
-            });
-        };
-    }
+    
 
 
 
@@ -882,5 +759,148 @@
     function run() {
         FastClick.attach(document.body);
     }
+    
+appModule.controller('editVehicleController', editVehicleController)
+
+editVehicleController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'VehiclesFactory', 'CarriersFactory'];
+
+
+function editVehicleController($scope, $stateParams, $state, $controller, $location, VehiclesFactory, CarriersFactory) 
+{
+	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+	var originalVehicle = VehiclesFactory.get({vehicleId: $stateParams.vehicleId}, function(vehicle)
+	{
+		$scope.carriers = CarriersFactory.query(function(carriers)
+		{
+			if (carriers[vehicle.carrier_id] == undefined)
+				vehicle.carrier_id = carriers[0].id;
+		});
+	});
+
+	$scope.editVehicle = originalVehicle;
+
+	$scope.isClean = function() 
+	{ 
+		return angular.equals(originalVehicle, $scope.editVehicle); 
+	}
+
+	$scope.update = function() 
+	{
+		VehiclesFactory.update({vehicleId:$stateParams.vehicleId}, $scope.editVehicle, function() 
+		{
+			$location.path('/vehicles');
+		});
+	};
+}
+
+appModule.controller('newVehicleController', newVehicleController)
+
+newVehicleController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'VehiclesFactory', 'CarriersFactory'];
+
+
+function newVehicleController($scope, $stateParams, $state, $controller, $location, VehiclesFactory, CarriersFactory) 
+{
+    angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+    $scope.newVehicle = new VehiclesFactory();
+    $scope.newVehicle.type = 'bus';
+
+    $scope.carriers = CarriersFactory.query(function(carriers)
+    {
+       $scope.newVehicle.carrier_id = carriers[0].id;
+   });
+
+    $scope.save = function() 
+    {
+        VehiclesFactory.save($scope.newVehicle, function() 
+        {
+            $location.path('/vehicles');
+        });
+    };
+}
+
+
+
+appModule.controller('vehiclesController', vehiclesController)
+
+vehiclesController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'VehiclesFactory', 'CarriersFactory'];
+
+
+function vehiclesController($scope, $stateParams, $state, $controller, VehiclesFactory, CarriersFactory)
+{
+    angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+    var i,j;
+    $scope.carriersNames = [];
+
+    VehiclesFactory.query(function(vehicles)
+    {
+        CarriersFactory.query(function(carriers) 
+        {
+            for (i = 0; i < vehicles.length; i++)
+            {
+                if (( j = indexOfObjByVal( carriers,'id', vehicles[i].carrier_id)) != undefined)
+                    $scope.carriersNames[i] = carriers[j].display_name;
+                else
+                    $scope.carriersNames[i] = "не существует";
+            }
+
+            $scope.vehicles = vehicles;
+        });
+    });
+
+    $scope.delete = function(id)
+    {
+        VehiclesFactory.remove({vehicleId: id}, function()
+        {
+            for (i = 0; i < $scope.vehicles.length; i++) 
+            {
+                if ($scope.vehicles[i].id == id) {$scope.vehicles.splice(i, 1)}
+            }
+    });
+    }
+    
+        //return new Date(entry.created_at.replace(/(\d+)-(\d+)-(\d+) (\d+):(\d+):(\d+) +(\d+)/, '$2/$3/$1 $4:$5:$6 GMT+$7'));
+        //var text = "2012-11-28 12:10:10 0000";
+    }
+
+appModule.factory('VehiclesFactory', ['$resource', function($resource)  
+{
+    return $resource('http://api.simplify-traffic.com/v1/vehicles/:vehicleId', 
+    {
+        vehicleId: "@vehicleId"
+    },
+
+    {
+        'get': 
+        { 
+            method:'GET',
+            headers: { 'Token': '12345' }
+        },
+
+        'query': 
+        {
+            method: 'GET',
+            isArray: true,
+            headers: { 'Token': '12345' }
+        },
+        'save':
+        { 
+            method:'POST',
+            headers: { 'Token': '12345' }
+        },
+        'update':
+        {
+            method:'PUT',
+            headers: { 'Token': '12345' }
+        },
+        'remove':
+        {
+            method:'DELETE',
+            headers: { 'Token': '12345' }
+        }
+    });
+}]);
 
 })();
