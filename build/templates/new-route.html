@@ -1,0 +1,77 @@
+
+
+<html>
+	<head>
+		<meta charset="utf-8"/>
+	</head>
+	<body>
+		<div class="grid-container align-center">
+			<div ng-controller='newRouteController'>
+				<form name="routeForm" align="center">
+					<div class="medium-6 grid-content">
+						<br/>
+						<div ng-class="{error: !routeForm.carrier_id.$pristine}">
+							<label class="form-label">
+								Компания:
+							</label>
+							<select ng-model="newRoute.carrier_id"  name="carrier_id">
+								<option ng-repeat="object in carriers" value="{{object.id}}">{{object.display_name}}</option>
+							</select>
+						</div>
+						<div ng-class="{error: !routeForm.city_id.$pristine}">
+							<label class="form-label">
+								Населенный пункт:
+							</label>
+							<select ng-model="newRoute.city_id"  name="city_id">
+								<option ng-repeat="object in cities" value="{{object.id}}">{{object.name}}</option>
+							</select>
+						</div>
+						
+						<div ng-class="{error: routeForm.name.$invalid && !routeForm.name.$pristine}">
+							<label class="form-label">
+								Название:
+							</label>
+							<input type="text" ng-model="newRoute.name" name="name" placeholder="31 маршрут" required>
+						</div>
+						<div ng-class="{error: routeForm.number.$invalid && !routeForm.number.$pristine}">
+							<label class="form-label">
+								Номер:
+							</label>
+							<input type="text" ng-model="newRoute.number" name="number" placeholder="31" required>
+						</div>
+						
+						<div ng-class="{error: routeForm.description.$invalid && !routeForm.description.$pristine}">
+							<label class="form-label">
+								Описание:
+							</label>
+							<textarea rows="1" ng-model="newRoute.description" name="description" placeholder="ст. Крюково - гор. больница" required></textarea>
+						</div>
+						
+						<div ng-class="{error: routeForm.time_start.$invalid && !routeForm.time_start.$pristine}">
+							<label class="form-label">
+								Начинает работу в:
+							</label>
+							<input type="text" ng-model="newRoute.time_start" name="time_start" placeholder="5:30" required>
+						</div>
+						
+						<div ng-class="{error: routeForm.time_end.$invalid && !routeForm.time_end.$pristine}">
+							<label class="form-label">
+								Заканчивает работу в:
+							</label>
+							
+							<input type="text" ng-model="newRoute.time_end" name="time_end" placeholder="01:12" required>
+						</div>
+						<div class="grid-block align-spaced">
+							<div class="grid-block medium-5 align-center">
+								<a class="secondary expand button" href="#" ui-sref="routes">Отмена</a>
+							</div>
+							<div class="grid-block medium-5 align-center">
+								<a class="success expand button" ng-click="save()" ng-disabled="routeForm.$invalid" href="#" >Добавить</a>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>
