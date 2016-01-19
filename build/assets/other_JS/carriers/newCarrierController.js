@@ -1,0 +1,20 @@
+
+appModule.controller('newCarrierController', newCarrierController)
+
+newCarrierController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CarriersFactory'];
+
+
+function newCarrierController($scope, $stateParams, $state, $controller, $location, CarriersFactory) 
+{
+	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+	$scope.newCarrier = new CarriersFactory();
+
+	$scope.save = function() 
+	{
+		CarriersFactory.save($scope.newCarrier, function() 
+		{
+			$location.path('/carriers');
+		});
+	};
+}
