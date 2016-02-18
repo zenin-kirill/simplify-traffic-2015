@@ -440,8 +440,8 @@
 
 // $modal-background: #fff;
 // $modal-border: 0;
-// $modal-radius: 0px;
-// $modal-shadow: none;
+// $modal-radius: 100px;
+   $modal-shadow: 0px 0 10px rgba(black, 0.1);
 // $modal-zindex: 1000;
 // $modal-sizes: (
 //   tiny: 300px,
@@ -451,7 +451,7 @@
 // );
 
 // $modal-overlay-class: 'modal-overlay';
-// $modal-overlay-background: rgba(#333, 0.7); 
+// $modal-overlay-background: rgba(#555, 0.01); 
 
 // 18. Motion UI
 // - - - - - - - - - - - - - - -
@@ -485,14 +485,14 @@
 // $motion-spin-and-fade: true;
 
 // Default speed for transitions and animations
-// $motion-duration-default: 500ms;
+   $motion-duration-default: 50ms;
 
 // Slow and fast modifiders
-// $motion-duration-slow: 750ms;
-// $motion-duration-fast: 250ms;
-// $motion-stagger-duration-default: 150ms;
-// $motion-stagger-duration-short: 50ms;
-// $motion-stagger-duration-long: 300ms;
+   $motion-duration-slow: 75ms;
+   $motion-duration-fast: 25ms;
+   $motion-stagger-duration-default: 15ms;
+   $motion-stagger-duration-short: 5ms;
+   $motion-stagger-duration-long: 30ms;
 
 // Default timing function for transitions and animations
 // $motion-timing-default: ease;

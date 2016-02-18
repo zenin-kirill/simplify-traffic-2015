@@ -12,14 +12,32 @@ function editRouteController($scope, $stateParams, $state, $controller, $locatio
 	{
 		$scope.cities = CitiesFactory.query(function(cities)
 		{
-			if (cities[route.city_id] == undefined)
+			var i = indexOfObjByVal(cities,'id', route.city_id);
+
+			if (cities[i] != undefined)
+			{
+				var deleted = cities.splice(i, 1)[0];
+				cities.splice(0, 0, deleted);
+			}
+			else
+			{
 				route.city_id = cities[0].id;
+			}
 		});
 
 		$scope.carriers = CarriersFactory.query(function(carriers)
 		{
-			if (carriers[route.carrier_id] == undefined)
+			var i = indexOfObjByVal(carriers,'id', route.carrier_id);
+
+			if (carriers[i] != undefined)
+			{
+				var deleted = carriers.splice(i, 1)[0];
+				carriers.splice(0, 0, deleted);
+			}
+			else
+			{
 				route.carrier_id = carriers[0].id;
+			}
 		});
 	});
 	

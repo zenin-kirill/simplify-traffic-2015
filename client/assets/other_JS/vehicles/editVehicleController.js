@@ -12,8 +12,17 @@ function editVehicleController($scope, $stateParams, $state, $controller, $locat
 	{
 		$scope.carriers = CarriersFactory.query(function(carriers)
 		{
-			if (carriers[vehicle.carrier_id] == undefined)
+			var i = indexOfObjByVal(carriers,'id', vehicle.carrier_id);
+
+			if (carriers[i] != undefined)
+			{
+				var deleted = carriers.splice(i, 1)[0];
+				carriers.splice(0, 0, deleted);
+			}
+			else
+			{
 				vehicle.carrier_id = carriers[0].id;
+			}
 		});
 	});
 

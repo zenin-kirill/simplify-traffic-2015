@@ -12,8 +12,17 @@ function editUserController($scope, $stateParams, $state, $controller, $location
 	{
 		$scope.carriers = CarriersFactory.query( function(carriers)
 		{
-			if (carriers[user.carrier_id] == undefined)
+			var i = indexOfObjByVal(carriers,'id', user.carrier_id);
+
+			if (carriers[i] != undefined)
+			{
+				var deleted = carriers.splice(i, 1)[0];
+				carriers.splice(0, 0, deleted);
+			}
+			else
+			{
 				user.carrier_id = carriers[0].id;
+			}
 		});
 		user.password = "";
 	})

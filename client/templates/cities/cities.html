@@ -57,7 +57,20 @@ url: /cities
 									<a ui-sref="edit-city({cityId: object.id})">Изменить</a>
 								</div>
 								<div class="align-center medium-1 grid-block">
-									<a ng-click="delete(object.id)">X</a>
+									<a zf-open="ConfirmOfDeletingModalDialog">X</a>
+
+									<div zf-modal="" id="ConfirmOfDeletingModalDialog" overlay="false" overlay-close="false" class="tiny dialog">
+										<p><h5>Вы действительно хотите удалить данный объект?</h5></p>
+										<div class="grid-block align-spaced">
+											<div class="grid-block medium-5 align-center">
+												<a zf-close="" ng-click="delete(object.id)"  class="alert expand button">OK</a>
+											</div>
+											<div class="grid-block medium-5 align-center">
+												<a zf-close="" class="secondary expand button">Отмена</a>
+											</div>
+										</div>
+									</div>
+									
 								</div>
 							</div>
 						</li>
@@ -65,5 +78,6 @@ url: /cities
 				</section>
 			</div>
 		</div>
+
 	</body>
 </html>

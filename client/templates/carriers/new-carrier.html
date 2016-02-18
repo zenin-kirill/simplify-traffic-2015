@@ -26,11 +26,20 @@ url: /carriers/new
 							</label>
 							<input type="text" ng-model="newCarrier.display_name" name="display_name" placeholder="Мосгортранс" required>
 						</div>
-						<div ng-class="{error: carrierForm.addres.$invalid && !carrierForm.addres.$pristine}">
+						<div ng-class="{error: carrierForm.city.$invalid && !carrierForm.city.$pristine}">
+							<label class="form-label">
+								Город:
+							</label>
+							<select ng-model="newCarrier.city_id"  name="city_id">
+								<option ng-repeat="city in cities" value="{{city.id}}">{{city.name}}</option>
+							</select>
+						</div>
+						<div ng-class="{error: carrierForm.address.$invalid && !carrierForm.address.$pristine}">
 							<label class="form-label">
 								Адрес:
 							</label>
-							<input type="text" ng-model="newCarrier.addres" name="addres" placeholder="РФ , г. Москва ул. Автозаводская д. 3 оф. 234" required>
+							<input type="text" ng-model="newCarrier.address" name="address" placeholder="ул. Автозаводская д. 3 оф. 234" required>
+							</span>
 						</div>
 						<div ng-class="{error: carrierForm.email.$invalid && !carrierForm.email.$pristine}">
 							<label class="form-label">
@@ -38,11 +47,11 @@ url: /carriers/new
 							</label>
 							<input type="text" ng-model="newCarrier.email" name="email" placeholder="rules@mosgortrans.ru" required>
 						</div>
-						<div ng-class="{error: carrierForm.telefone.$invalid && !carrierForm.telefone.$pristine}">
+						<div ng-class="{error: carrierForm.phone.$invalid && !carrierForm.phone.$pristine}">
 							<label class="form-label">
 								Телефон:
 							</label>
-							<input type="text" ng-model="newCarrier.telefone" name="telefone" placeholder="84995344556 " required>
+							<input type="text" ng-model="newCarrier.phone" name="phone" placeholder="84995344556 " required>
 						</div>
 						<div ng-class="{error: carrierForm.contact_name.$invalid && !carrierForm.contact_name.$pristine}">
 							<label class="form-label">

@@ -57,13 +57,13 @@ url: /carriers
 									{{object.display_name}}
 								</div>
 								<div class="align-center medium-3 grid-block">
-									{{object.addres}}
+									{{object.address}}
 								</div>
 								<div class="align-center medium-2 grid-block">
 									{{object.email}}
 								</div>
 								<div class="align-center medium-3 grid-block">
-									{{object.telefone}}
+									{{object.phone}}
 								</div>
 								<!-- <div class="align-center medium-4 grid-block">
 											{{object.created_at}}
@@ -72,7 +72,20 @@ url: /carriers
 									<a ui-sref="edit-carrier({carrierId: object.id})">Изменить</a>
 								</div>
 								<div class="align-center medium-1 grid-block">
-									<a ng-click="delete(object.id)">X</a>
+									<a zf-open="ConfirmOfDeletingModalDialog">X</a>
+
+									<div zf-modal="" id="ConfirmOfDeletingModalDialog" overlay="false" overlay-close="false" class="tiny dialog">
+										<p><h5>Вы действительно хотите удалить данный объект?</h5></p>
+										<div class="grid-block align-spaced">
+											<div class="grid-block medium-5 align-center">
+												<a zf-close="" ng-click="delete(object.id)"  class="alert expand button">OK</a>
+											</div>
+											<div class="grid-block medium-5 align-center">
+												<a zf-close="" class="secondary expand button">Отмена</a>
+											</div>
+										</div>
+									</div>
+
 								</div>
 							</div>
 						</li>

@@ -48,7 +48,8 @@
 
 
 
-    function indexOfObjByVal(array, property, value) {
+    function indexOfObjByVal(array, property, value) 
+    {
         if (array instanceof Array)
         {
             for (var i = 0; i < array.length; i++)
@@ -59,6 +60,10 @@
             return null;
     }
 
+    function selectObj($scope, obj)
+    {
+        return $scope.selectedObj = obj;
+    }
 
 
     function run() {

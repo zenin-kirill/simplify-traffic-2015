@@ -12,8 +12,17 @@ function editStopController($scope, $stateParams, $state, $controller, $location
 	{
 		$scope.cities = CitiesFactory.query(function(cities)
 		{
-			if (cities[stop.city_id] == undefined)
+			var i = indexOfObjByVal(cities,'id', stop.city_id);
+
+			if (cities[i] != undefined)
+			{
+				var deleted = cities.splice(i, 1)[0];
+				cities.splice(0, 0, deleted);
+			}
+			else
+			{
 				stop.city_id = cities[0].id;
+			}
 		});
 	});
 

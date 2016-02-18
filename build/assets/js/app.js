@@ -48,7 +48,8 @@
 
 
 
-    function indexOfObjByVal(array, property, value) {
+    function indexOfObjByVal(array, property, value) 
+    {
         if (array instanceof Array)
         {
             for (var i = 0; i < array.length; i++)
@@ -59,6 +60,10 @@
             return null;
     }
 
+    function selectObj($scope, obj)
+    {
+        return $scope.selectedObj = obj;
+    }
 
 
     function run() {
@@ -133,14 +138,31 @@ appModule.factory('CarriersFactory', ['$resource', function($resource)
 
 appModule.controller('editCarrierController', editCarrierController)
 
-editCarrierController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CarriersFactory'];
+editCarrierController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CarriersFactory', 'CitiesFactory'];
 
 
-function editCarrierController($scope, $stateParams, $state, $controller, $location, CarriersFactory) 
+function editCarrierController($scope, $stateParams, $state, $controller, $location, CarriersFactory, CitiesFactory) 
 {
 	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
 
-	var originalCarrier = CarriersFactory.get({carrierId: $stateParams.carrierId});
+	var originalCarrier = CarriersFactory.get({carrierId: $stateParams.carrierId}, function(carrier)
+	{
+		$scope.cities = CitiesFactory.query(function(cities)
+		{
+			var i = indexOfObjByVal(cities,'id', carrier.city_id);
+
+			if (cities[i] != undefined)
+			{
+				var deleted = cities.splice(i, 1)[0];
+				cities.splice(0, 0, deleted);
+			}
+			else
+			{
+				carrier.city_id = cities[0].id;
+			}
+		});
+	});
+
 	$scope.editCarrier = originalCarrier;
 
 	$scope.isClean = function() 
@@ -159,130 +181,25 @@ function editCarrierController($scope, $stateParams, $state, $controller, $locat
 
 appModule.controller('newCarrierController', newCarrierController)
 
-newCarrierController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CarriersFactory'];
+newCarrierController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CarriersFactory', 'CitiesFactory'];
 
 
-function newCarrierController($scope, $stateParams, $state, $controller, $location, CarriersFactory) 
+function newCarrierController($scope, $stateParams, $state, $controller, $location, CarriersFactory, CitiesFactory) 
 {
 	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
 
 	$scope.newCarrier = new CarriersFactory();
+
+	$scope.cities = CitiesFactory.query(function(cities)
+	{
+		$scope.newCarrier.city_id = cities[0].id;
+	});
 
 	$scope.save = function() 
 	{
 		CarriersFactory.save($scope.newCarrier, function() 
 		{
 			$location.path('/carriers');
-		});
-	};
-}
-
-appModule.controller('citiesController', citiesController)
-
-citiesController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'CitiesFactory'];
-
-
-function citiesController($scope, $stateParams, $state, $controller, CitiesFactory)
-{
-	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
-	
-	var i;
-	var city = CitiesFactory.query();
-
-	$scope.cities = city;
-
-	$scope.delete = function(id)
-	{
-		CitiesFactory.remove({cityId: id}, function()
-		{
-			for (i = 0; i < $scope.cities.length; i++) 
-			{
-				if ($scope.cities[i].id == id) {$scope.cities.splice(i, 1)}
-			}
-	});
-	}
-}
-
-appModule.factory('CitiesFactory', ['$resource', function($resource)  
-{
-	return $resource('http://api.simplify-traffic.com/v1/cities/:cityId', 
-	{
-		cityId: "@cityId"
-	},
-
-	{
-		'get': 
-		{ 
-			method:'GET',
-			headers: { 'Token': '12345' }
-		},
-
-		'query': 
-		{
-			method: 'GET',
-			isArray: true,
-			headers: { 'Token': '12345' }
-		},
-		'save':
-		{ 
-			method:'POST',
-			headers: { 'Token': '12345' }
-		},
-		'update':
-		{
-			method:'PUT',
-			headers: { 'Token': '12345' }
-		},
-		'remove':
-		{
-			method:'DELETE',
-			headers: { 'Token': '12345' }
-		}
-	});
-}])
-
-appModule.controller('editCityController', editCityController)
-
-editCityController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CitiesFactory'];
-
-
-function editCityController($scope, $stateParams, $state, $controller, $location, CitiesFactory) 
-{
-	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
-
-	var originalCity = CitiesFactory.get({cityId: $stateParams.cityId});
-	$scope.editCity = originalCity;
-
-	$scope.isClean = function() 
-	{ 
-		return angular.equals(originalCity, $scope.editCity); 
-	}
-	
-	$scope.update = function() 
-	{
-		CitiesFactory.update({cityId:$stateParams.cityId}, $scope.editCity, function() 
-		{
-			$location.path('/cities');
-		});
-	};
-}
-
-appModule.controller('newCityController', newCityController)
-
-newCityController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CitiesFactory'];
-
-
-function newCityController($scope, $stateParams, $state, $controller, $location, CitiesFactory) 
-{
-	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
-
-	$scope.newCity = new CitiesFactory();
-
-	$scope.save = function() 
-	{
-		CitiesFactory.save($scope.newCity, function() 
-		{
-			$location.path('/cities');
 		});
 	};
 }
@@ -300,14 +217,32 @@ function editRouteController($scope, $stateParams, $state, $controller, $locatio
 	{
 		$scope.cities = CitiesFactory.query(function(cities)
 		{
-			if (cities[route.city_id] == undefined)
+			var i = indexOfObjByVal(cities,'id', route.city_id);
+
+			if (cities[i] != undefined)
+			{
+				var deleted = cities.splice(i, 1)[0];
+				cities.splice(0, 0, deleted);
+			}
+			else
+			{
 				route.city_id = cities[0].id;
+			}
 		});
 
 		$scope.carriers = CarriersFactory.query(function(carriers)
 		{
-			if (carriers[route.carrier_id] == undefined)
+			var i = indexOfObjByVal(carriers,'id', route.carrier_id);
+
+			if (carriers[i] != undefined)
+			{
+				var deleted = carriers.splice(i, 1)[0];
+				carriers.splice(0, 0, deleted);
+			}
+			else
+			{
 				route.carrier_id = carriers[0].id;
+			}
 		});
 	});
 	
@@ -453,6 +388,116 @@ appModule.factory('RoutesFactory', ['$resource', function($resource)
 	});
 }])
 
+appModule.controller('citiesController', citiesController)
+
+citiesController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'CitiesFactory'];
+
+
+function citiesController($scope, $stateParams, $state, $controller, CitiesFactory)
+{
+	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+	
+	var i;
+	var city = CitiesFactory.query();
+
+	$scope.cities = city;
+
+	$scope.delete = function(id)
+	{
+		CitiesFactory.remove({cityId: id}, function()
+		{
+			for (i = 0; i < $scope.cities.length; i++) 
+			{
+				if ($scope.cities[i].id == id) {$scope.cities.splice(i, 1)}
+			}
+	});
+	}
+}
+
+appModule.factory('CitiesFactory', ['$resource', function($resource)  
+{
+	return $resource('http://api.simplify-traffic.com/v1/cities/:cityId', 
+	{
+		cityId: "@cityId"
+	},
+
+	{
+		'get': 
+		{ 
+			method:'GET',
+			headers: { 'Token': '12345' }
+		},
+
+		'query': 
+		{
+			method: 'GET',
+			isArray: true,
+			headers: { 'Token': '12345' }
+		},
+		'save':
+		{ 
+			method:'POST',
+			headers: { 'Token': '12345' }
+		},
+		'update':
+		{
+			method:'PUT',
+			headers: { 'Token': '12345' }
+		},
+		'remove':
+		{
+			method:'DELETE',
+			headers: { 'Token': '12345' }
+		}
+	});
+}])
+
+appModule.controller('editCityController', editCityController)
+
+editCityController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CitiesFactory'];
+
+
+function editCityController($scope, $stateParams, $state, $controller, $location, CitiesFactory) 
+{
+	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+	var originalCity = CitiesFactory.get({cityId: $stateParams.cityId});
+	$scope.editCity = originalCity;
+
+	$scope.isClean = function() 
+	{ 
+		return angular.equals(originalCity, $scope.editCity); 
+	}
+	
+	$scope.update = function() 
+	{
+		CitiesFactory.update({cityId:$stateParams.cityId}, $scope.editCity, function() 
+		{
+			$location.path('/cities');
+		});
+	};
+}
+
+appModule.controller('newCityController', newCityController)
+
+newCityController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CitiesFactory'];
+
+
+function newCityController($scope, $stateParams, $state, $controller, $location, CitiesFactory) 
+{
+	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+	$scope.newCity = new CitiesFactory();
+
+	$scope.save = function() 
+	{
+		CitiesFactory.save($scope.newCity, function() 
+		{
+			$location.path('/cities');
+		});
+	};
+}
+
 appModule.controller('editStopController', editStopController)
 
 editStopController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'StopsFactory', 'CitiesFactory'];
@@ -466,8 +511,17 @@ function editStopController($scope, $stateParams, $state, $controller, $location
 	{
 		$scope.cities = CitiesFactory.query(function(cities)
 		{
-			if (cities[stop.city_id] == undefined)
+			var i = indexOfObjByVal(cities,'id', stop.city_id);
+
+			if (cities[i] != undefined)
+			{
+				var deleted = cities.splice(i, 1)[0];
+				cities.splice(0, 0, deleted);
+			}
+			else
+			{
 				stop.city_id = cities[0].id;
+			}
 		});
 	});
 
@@ -603,8 +657,17 @@ function editUserController($scope, $stateParams, $state, $controller, $location
 	{
 		$scope.carriers = CarriersFactory.query( function(carriers)
 		{
-			if (carriers[user.carrier_id] == undefined)
+			var i = indexOfObjByVal(carriers,'id', user.carrier_id);
+
+			if (carriers[i] != undefined)
+			{
+				var deleted = carriers.splice(i, 1)[0];
+				carriers.splice(0, 0, deleted);
+			}
+			else
+			{
 				user.carrier_id = carriers[0].id;
+			}
 		});
 		user.password = "";
 	})
@@ -763,8 +826,17 @@ function editVehicleController($scope, $stateParams, $state, $controller, $locat
 	{
 		$scope.carriers = CarriersFactory.query(function(carriers)
 		{
-			if (carriers[vehicle.carrier_id] == undefined)
+			var i = indexOfObjByVal(carriers,'id', vehicle.carrier_id);
+
+			if (carriers[i] != undefined)
+			{
+				var deleted = carriers.splice(i, 1)[0];
+				carriers.splice(0, 0, deleted);
+			}
+			else
+			{
 				vehicle.carrier_id = carriers[0].id;
+			}
 		});
 	});
 
