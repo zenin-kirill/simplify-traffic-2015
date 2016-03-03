@@ -792,7 +792,9 @@ a, [ui-sref], [zf-open], [zf-close], [zf-toggle] {
   $switch-class - class to use for switches inside list items.
 */
 .block-list {
-  font-size: 1rem; }
+  font-size: 1rem;
+  margin-left: -1rem;
+  margin-right: -1rem; }
   .block-list input[type="text"], .block-list input[type="password"], .block-list input[type="date"], .block-list input[type="datetime"], .block-list input[type="datetime-local"], .block-list input[type="month"], .block-list input[type="week"], .block-list input[type="email"], .block-list input[type="number"], .block-list input[type="search"], .block-list input[type="tel"], .block-list input[type="time"], .block-list input[type="url"], .block-list input[type="color"], .block-list textarea {
     margin: 0;
     border: 0;

@@ -70,20 +70,86 @@
         FastClick.attach(document.body);
     }
 
-appModule.controller('editStopController', editStopController)
+appModule.controller('carriersController', carriersController)
 
-editStopController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'StopsFactory', 'CitiesFactory'];
+carriersController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'CarriersFactory'];
 
 
-function editStopController($scope, $stateParams, $state, $controller, $location, StopsFactory, CitiesFactory) 
+function carriersController($scope, $stateParams, $state, $controller, CarriersFactory)
+{
+	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+	
+	var i;
+	var car = CarriersFactory.query();
+
+	$scope.carriers = car;
+
+	$scope.delete = function(id)
+	{
+		CarriersFactory.remove({carrierId: id}, function()
+		{
+			for (i = 0; i < $scope.car.length; i++) 
+			{
+				if ($scope.car[i].id == id) {$scope.car.splice(i, 1)}
+			}
+	});
+	}      
+}
+
+
+
+appModule.factory('CarriersFactory', ['$resource', function($resource)  
+{
+	return $resource('http://api.simplify-traffic.com/v1/carriers/:carrierId', 
+	{
+		carrierId: "@carrierId"
+	},
+
+	{
+		'get': 
+		{ 
+			method:'GET',
+			headers: { 'Token': '12345' }
+		},
+
+		'query': 
+		{
+			method: 'GET',
+			isArray: true,
+			headers: { 'Token': '12345' }
+		},
+		'save':
+		{ 
+			method:'POST',
+			headers: { 'Token': '12345' }
+		},
+		'update':
+		{
+			method:'PUT',
+			headers: { 'Token': '12345' }
+		},
+		'remove':
+		{
+			method:'DELETE',
+			headers: { 'Token': '12345' }
+		}
+	});
+}])
+
+appModule.controller('editCarrierController', editCarrierController)
+
+editCarrierController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CarriersFactory', 'CitiesFactory'];
+
+
+function editCarrierController($scope, $stateParams, $state, $controller, $location, CarriersFactory, CitiesFactory) 
 {
 	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
 
-	var originalStop = StopsFactory.get({stopId: $stateParams.stopId}, function(stop)
+	var originalCarrier = CarriersFactory.get({carrierId: $stateParams.carrierId}, function(carrier)
 	{
 		$scope.cities = CitiesFactory.query(function(cities)
 		{
-			var i = indexOfObjByVal(cities,'id', stop.city_id);
+			var i = indexOfObjByVal(cities,'id', carrier.city_id);
 
 			if (cities[i] != undefined)
 			{
@@ -92,236 +158,48 @@ function editStopController($scope, $stateParams, $state, $controller, $location
 			}
 			else
 			{
-				stop.city_id = cities[0].id;
+				carrier.city_id = cities[0].id;
 			}
 		});
 	});
 
-	$scope.editStop = originalStop;
-	
+	$scope.editCarrier = originalCarrier;
+
 	$scope.isClean = function() 
 	{ 
-		return angular.equals(originalStop, $scope.editStop); 
+		return angular.equals(originalCarrier, $scope.editCarrier); 
 	}
-
+	
 	$scope.update = function() 
 	{
-		StopsFactory.update({stopId:$stateParams.stopId}, $scope.editStop, function() 
+		CarriersFactory.update({carrierId:$stateParams.carrierId}, $scope.editCarrier, function() 
 		{
-			$location.path('/stops');
+			$location.path('/carriers');
 		});
 	};
 }
 
-appModule.controller('newStopController', newStopController)
+appModule.controller('newCarrierController', newCarrierController)
 
-newStopController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'StopsFactory', 'CitiesFactory'];
+newCarrierController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CarriersFactory', 'CitiesFactory'];
 
 
-function newStopController($scope, $stateParams, $state, $controller, $location, StopsFactory, CitiesFactory) 
+function newCarrierController($scope, $stateParams, $state, $controller, $location, CarriersFactory, CitiesFactory) 
 {
 	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
 
-	$scope.newStop = new StopsFactory();
+	$scope.newCarrier = new CarriersFactory();
 
 	$scope.cities = CitiesFactory.query(function(cities)
 	{
-		$scope.newStop.city_id = cities[0].id;
+		$scope.newCarrier.city_id = cities[0].id;
 	});
 
 	$scope.save = function() 
 	{
-		StopsFactory.save($scope.newStop, function() 
+		CarriersFactory.save($scope.newCarrier, function() 
 		{
-			$location.path('/stops');
-		});
-	};
-}
-
-appModule.controller('stopsController', stopsController)
-
-stopsController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'StopsFactory', 'CitiesFactory'];
-
-
-function stopsController($scope, $stateParams, $state, $controller, StopsFactory, CitiesFactory)
-{
-	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
-	
-	var i, j;
-	$scope.cityNames = [];
-	
-	StopsFactory.query(function(stops)
-	{
-		CitiesFactory.query(function(cities) 
-		{
-			for (i = 0; i < stops.length; i++)
-			{
-				if (( j = indexOfObjByVal( cities,'id', stops[i].city_id)) != undefined)
-					$scope.cityNames[i] = cities[j].name;
-				else
-					$scope.cityNames[i] = "не существует";
-			}
-
-			$scope.stops = stops;
-		});
-	});
-	
-	$scope.delete = function(id)
-	{
-		StopsFactory.remove({stopId: id}, function()
-		{
-			for (i = 0; i < $scope.stops.length; i++) 
-			{
-				if ($scope.stops[i].id == id) {$scope.stops.splice(i, 1)}
-			}
-	});
-	}
-}
-
-appModule.factory('StopsFactory', ['$resource', function($resource)  
-{
-	return $resource('http://api.simplify-traffic.com/v1/stops/:stopId', 
-	{
-		stopId: "@stopId"
-	},
-
-	{
-		'get': 
-		{ 
-			method:'GET',
-			headers: { 'Token': '12345' }
-		},
-
-		'query': 
-		{
-			method: 'GET',
-			isArray: true,
-			headers: { 'Token': '12345' }
-		},
-		'save':
-		{ 
-			method:'POST',
-			headers: { 'Token': '12345' }
-		},
-		'update':
-		{
-			method:'PUT',
-			headers: { 'Token': '12345' }
-		},
-		'remove':
-		{
-			method:'DELETE',
-			headers: { 'Token': '12345' }
-		}
-	});
-}])
-
-appModule.controller('citiesController', citiesController)
-
-citiesController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'CitiesFactory'];
-
-
-function citiesController($scope, $stateParams, $state, $controller, CitiesFactory)
-{
-	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
-	
-	var i;
-	var city = CitiesFactory.query();
-
-	$scope.cities = city;
-
-	$scope.delete = function(id)
-	{
-		CitiesFactory.remove({cityId: id}, function()
-		{
-			for (i = 0; i < $scope.cities.length; i++) 
-			{
-				if ($scope.cities[i].id == id) {$scope.cities.splice(i, 1)}
-			}
-	});
-	}
-}
-
-appModule.factory('CitiesFactory', ['$resource', function($resource)  
-{
-	return $resource('http://api.simplify-traffic.com/v1/cities/:cityId', 
-	{
-		cityId: "@cityId"
-	},
-
-	{
-		'get': 
-		{ 
-			method:'GET',
-			headers: { 'Token': '12345' }
-		},
-
-		'query': 
-		{
-			method: 'GET',
-			isArray: true,
-			headers: { 'Token': '12345' }
-		},
-		'save':
-		{ 
-			method:'POST',
-			headers: { 'Token': '12345' }
-		},
-		'update':
-		{
-			method:'PUT',
-			headers: { 'Token': '12345' }
-		},
-		'remove':
-		{
-			method:'DELETE',
-			headers: { 'Token': '12345' }
-		}
-	});
-}])
-
-appModule.controller('editCityController', editCityController)
-
-editCityController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CitiesFactory'];
-
-
-function editCityController($scope, $stateParams, $state, $controller, $location, CitiesFactory) 
-{
-	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
-
-	var originalCity = CitiesFactory.get({cityId: $stateParams.cityId});
-	$scope.editCity = originalCity;
-
-	$scope.isClean = function() 
-	{ 
-		return angular.equals(originalCity, $scope.editCity); 
-	}
-	
-	$scope.update = function() 
-	{
-		CitiesFactory.update({cityId:$stateParams.cityId}, $scope.editCity, function() 
-		{
-			$location.path('/cities');
-		});
-	};
-}
-
-appModule.controller('newCityController', newCityController)
-
-newCityController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CitiesFactory'];
-
-
-function newCityController($scope, $stateParams, $state, $controller, $location, CitiesFactory) 
-{
-	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
-
-	$scope.newCity = new CitiesFactory();
-
-	$scope.save = function() 
-	{
-		CitiesFactory.save($scope.newCity, function() 
-		{
-			$location.path('/cities');
+			$location.path('/carriers');
 		});
 	};
 }
@@ -510,39 +388,37 @@ appModule.factory('RoutesFactory', ['$resource', function($resource)
 	});
 }])
 
-appModule.controller('carriersController', carriersController)
+appModule.controller('citiesController', citiesController)
 
-carriersController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'CarriersFactory'];
+citiesController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'CitiesFactory'];
 
 
-function carriersController($scope, $stateParams, $state, $controller, CarriersFactory)
+function citiesController($scope, $stateParams, $state, $controller, CitiesFactory)
 {
 	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
 	
 	var i;
-	var car = CarriersFactory.query();
+	var city = CitiesFactory.query();
 
-	$scope.carriers = car;
+	$scope.cities = city;
 
 	$scope.delete = function(id)
 	{
-		CarriersFactory.remove({carrierId: id}, function()
+		CitiesFactory.remove({cityId: id}, function()
 		{
-			for (i = 0; i < $scope.car.length; i++) 
+			for (i = 0; i < $scope.cities.length; i++) 
 			{
-				if ($scope.car[i].id == id) {$scope.car.splice(i, 1)}
+				if ($scope.cities[i].id == id) {$scope.cities.splice(i, 1)}
 			}
 	});
-	}      
+	}
 }
 
-
-
-appModule.factory('CarriersFactory', ['$resource', function($resource)  
+appModule.factory('CitiesFactory', ['$resource', function($resource)  
 {
-	return $resource('http://api.simplify-traffic.com/v1/carriers/:carrierId', 
+	return $resource('http://api.simplify-traffic.com/v1/cities/:cityId', 
 	{
-		carrierId: "@carrierId"
+		cityId: "@cityId"
 	},
 
 	{
@@ -576,20 +452,66 @@ appModule.factory('CarriersFactory', ['$resource', function($resource)
 	});
 }])
 
-appModule.controller('editCarrierController', editCarrierController)
+appModule.controller('editCityController', editCityController)
 
-editCarrierController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CarriersFactory', 'CitiesFactory'];
+editCityController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CitiesFactory'];
 
 
-function editCarrierController($scope, $stateParams, $state, $controller, $location, CarriersFactory, CitiesFactory) 
+function editCityController($scope, $stateParams, $state, $controller, $location, CitiesFactory) 
 {
 	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
 
-	var originalCarrier = CarriersFactory.get({carrierId: $stateParams.carrierId}, function(carrier)
+	var originalCity = CitiesFactory.get({cityId: $stateParams.cityId});
+	$scope.editCity = originalCity;
+
+	$scope.isClean = function() 
+	{ 
+		return angular.equals(originalCity, $scope.editCity); 
+	}
+	
+	$scope.update = function() 
+	{
+		CitiesFactory.update({cityId:$stateParams.cityId}, $scope.editCity, function() 
+		{
+			$location.path('/cities');
+		});
+	};
+}
+
+appModule.controller('newCityController', newCityController)
+
+newCityController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CitiesFactory'];
+
+
+function newCityController($scope, $stateParams, $state, $controller, $location, CitiesFactory) 
+{
+	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+	$scope.newCity = new CitiesFactory();
+
+	$scope.save = function() 
+	{
+		CitiesFactory.save($scope.newCity, function() 
+		{
+			$location.path('/cities');
+		});
+	};
+}
+
+appModule.controller('editStopController', editStopController)
+
+editStopController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'StopsFactory', 'CitiesFactory'];
+
+
+function editStopController($scope, $stateParams, $state, $controller, $location, StopsFactory, CitiesFactory) 
+{
+	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+
+	var originalStop = StopsFactory.get({stopId: $stateParams.stopId}, function(stop)
 	{
 		$scope.cities = CitiesFactory.query(function(cities)
 		{
-			var i = indexOfObjByVal(cities,'id', carrier.city_id);
+			var i = indexOfObjByVal(cities,'id', stop.city_id);
 
 			if (cities[i] != undefined)
 			{
@@ -598,51 +520,129 @@ function editCarrierController($scope, $stateParams, $state, $controller, $locat
 			}
 			else
 			{
-				carrier.city_id = cities[0].id;
+				stop.city_id = cities[0].id;
 			}
 		});
 	});
 
-	$scope.editCarrier = originalCarrier;
-
+	$scope.editStop = originalStop;
+	
 	$scope.isClean = function() 
 	{ 
-		return angular.equals(originalCarrier, $scope.editCarrier); 
+		return angular.equals(originalStop, $scope.editStop); 
 	}
-	
+
 	$scope.update = function() 
 	{
-		CarriersFactory.update({carrierId:$stateParams.carrierId}, $scope.editCarrier, function() 
+		StopsFactory.update({stopId:$stateParams.stopId}, $scope.editStop, function() 
 		{
-			$location.path('/carriers');
+			$location.path('/stops');
 		});
 	};
 }
 
-appModule.controller('newCarrierController', newCarrierController)
+appModule.controller('newStopController', newStopController)
 
-newCarrierController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'CarriersFactory', 'CitiesFactory'];
+newStopController.$inject = ['$scope', '$stateParams', '$state', '$controller', '$location', 'StopsFactory', 'CitiesFactory'];
 
 
-function newCarrierController($scope, $stateParams, $state, $controller, $location, CarriersFactory, CitiesFactory) 
+function newStopController($scope, $stateParams, $state, $controller, $location, StopsFactory, CitiesFactory) 
 {
 	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
 
-	$scope.newCarrier = new CarriersFactory();
+	$scope.newStop = new StopsFactory();
 
 	$scope.cities = CitiesFactory.query(function(cities)
 	{
-		$scope.newCarrier.city_id = cities[0].id;
+		$scope.newStop.city_id = cities[0].id;
 	});
 
 	$scope.save = function() 
 	{
-		CarriersFactory.save($scope.newCarrier, function() 
+		StopsFactory.save($scope.newStop, function() 
 		{
-			$location.path('/carriers');
+			$location.path('/stops');
 		});
 	};
 }
+
+appModule.controller('stopsController', stopsController)
+
+stopsController.$inject = ['$scope', '$stateParams', '$state', '$controller', 'StopsFactory', 'CitiesFactory'];
+
+
+function stopsController($scope, $stateParams, $state, $controller, StopsFactory, CitiesFactory)
+{
+	angular.extend(this, $controller('DefaultController', {$scope: $scope, $stateParams: $stateParams, $state: $state}));
+	
+	var i, j;
+	$scope.cityNames = [];
+	
+	StopsFactory.query(function(stops)
+	{
+		CitiesFactory.query(function(cities) 
+		{
+			for (i = 0; i < stops.length; i++)
+			{
+				if (( j = indexOfObjByVal( cities,'id', stops[i].city_id)) != undefined)
+					$scope.cityNames[i] = cities[j].name;
+				else
+					$scope.cityNames[i] = "не существует";
+			}
+
+			$scope.stops = stops;
+		});
+	});
+	
+	$scope.delete = function(id)
+	{
+		StopsFactory.remove({stopId: id}, function()
+		{
+			for (i = 0; i < $scope.stops.length; i++) 
+			{
+				if ($scope.stops[i].id == id) {$scope.stops.splice(i, 1)}
+			}
+	});
+	}
+}
+
+appModule.factory('StopsFactory', ['$resource', function($resource)  
+{
+	return $resource('http://api.simplify-traffic.com/v1/stops/:stopId', 
+	{
+		stopId: "@stopId"
+	},
+
+	{
+		'get': 
+		{ 
+			method:'GET',
+			headers: { 'Token': '12345' }
+		},
+
+		'query': 
+		{
+			method: 'GET',
+			isArray: true,
+			headers: { 'Token': '12345' }
+		},
+		'save':
+		{ 
+			method:'POST',
+			headers: { 'Token': '12345' }
+		},
+		'update':
+		{
+			method:'PUT',
+			headers: { 'Token': '12345' }
+		},
+		'remove':
+		{
+			method:'DELETE',
+			headers: { 'Token': '12345' }
+		}
+	});
+}])
 
 appModule.controller('editUserController', editUserController)
 
