@@ -1,5 +1,7 @@
 ## Simplify Traffic admin panel web application on AngularJS 
 
+**Опубликовано с согласием правобладателя @SamyRai**
+
 MIT License
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
